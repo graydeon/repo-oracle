@@ -67,7 +67,7 @@ def _generate_repo_index(repodir: Path, repo_slug: str) -> str:
             # Read first few lines for executive summary
             summary = ""
             try:
-                content = f.read_text()
+                content = f.read_text(encoding="utf-8")
                 import re
 
                 match = re.search(
