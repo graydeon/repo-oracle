@@ -634,12 +634,12 @@ def investigate(
         json_path = os.path.join(output_dir, f"repo-oracle-{slug}-{today}.json")
         html_path = os.path.join(output_dir, f"repo-oracle-{slug}-{today}.html")
 
-        with open(json_path, "w") as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
         if html:
             html_content = render_report(report, os.path.basename(json_path))
-            with open(html_path, "w") as f:
+            with open(html_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
 
         md_path = None
@@ -647,7 +647,7 @@ def investigate(
             from repo_oracle.render import render_markdown
 
             md_path = os.path.join(output_dir, f"repo-oracle-{slug}-{today}.md")
-            with open(md_path, "w") as f:
+            with open(md_path, "w", encoding="utf-8") as f:
                 f.write(render_markdown(report))
 
         # Terminal summary

@@ -267,12 +267,12 @@ def write_reports(
         # Generate indexes
         repo_index_html = _generate_repo_index(repodir, repo_slug)
         repo_index_path = repodir / "index.html"
-        repo_index_path.write_text(repo_index_html)
+        repo_index_path.write_text(repo_index_html, encoding="utf-8")
         result["repo_index"] = str(repo_index_path)
 
         global_index_html = _generate_global_index(reports_root)
         global_index_path = reports_root / "index.html"
-        global_index_path.write_text(global_index_html)
+        global_index_path.write_text(global_index_html, encoding="utf-8")
         result["global_index"] = str(global_index_path)
 
         # Git operations

@@ -73,10 +73,12 @@ class TestWriteReports:
                         },
                         "executive_summary": "A test project.",
                     }
-                )
+                ),
+                encoding="utf-8",
             )
             html_path.write_text(
-                "<!DOCTYPE html><html><body><h1>Test</h1></body></html>"
+                "<!DOCTYPE html><html><body><h1>Test</h1></body></html>",
+                encoding="utf-8",
             )
 
             # Create a fake context repo structure
@@ -111,8 +113,8 @@ class TestWriteReports:
         with tempfile.TemporaryDirectory() as tmpdir:
             json_path = Path(tmpdir, "r.json")
             html_path = Path(tmpdir, "r.html")
-            json_path.write_text("{}")
-            html_path.write_text("<html></html>")
+            json_path.write_text("{}", encoding="utf-8")
+            html_path.write_text("<html></html>", encoding="utf-8")
 
             context_dir = Path(tmpdir, "ctx")
             context_dir.mkdir()
@@ -137,8 +139,8 @@ class TestWriteReports:
         with tempfile.TemporaryDirectory() as tmpdir:
             json_path = Path(tmpdir, "r.json")
             html_path = Path(tmpdir, "r.html")
-            json_path.write_text("{}")
-            html_path.write_text("<html></html>")
+            json_path.write_text("{}", encoding="utf-8")
+            html_path.write_text("<html></html>", encoding="utf-8")
 
             # Context repo doesn't exist — should still create reports dir
             result = write_reports(

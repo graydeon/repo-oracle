@@ -241,7 +241,7 @@ class TestRenderReport:
 
     def test_output_to_file(self):
         report = _make_test_report()
-        with tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode="w") as f:
+        with tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode="w", encoding="utf-8") as f:
             f.write(render_report(report, "test.json"))
             path = f.name
         try:
