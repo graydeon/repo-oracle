@@ -75,7 +75,7 @@ _HTML_TEMPLATE_PATH = _TEMPLATE_DIR / "report.html.j2"
 def _load_template() -> Template:
     """Load the Jinja2 template from file, with inline fallback."""
     if _HTML_TEMPLATE_PATH.is_file():
-        return Template(_HTML_TEMPLATE_PATH.read_text())
+        return Template(_HTML_TEMPLATE_PATH.read_text(encoding="utf-8"))
     return Template(
         "<html><body><h1>{{ report.metadata.repo_name }}</h1><p>Report template not found.</p></body></html>"
     )
@@ -86,7 +86,7 @@ _MD_TEMPLATE_PATH = _TEMPLATE_DIR / "report.md.j2"
 
 def _load_md_template() -> Template:
     if _MD_TEMPLATE_PATH.is_file():
-        return Template(_MD_TEMPLATE_PATH.read_text())
+        return Template(_MD_TEMPLATE_PATH.read_text(encoding="utf-8"))
     return Template("# {{ report.metadata.repo_name }}\n\nReport template not found.")
 
 
