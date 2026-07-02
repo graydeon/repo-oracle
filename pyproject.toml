@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repo-oracle"
+version = "0.1.0"
+description = "Investigate any Git repository with one command — evidence-backed reports in JSON, HTML, and Markdown"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Gray d'Eon", email = "gray@repo-oracle.dev"}]
+keywords = ["cli", "repository", "analysis", "audit", "investigation", "code-review", "developer-tools"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Utilities",
+]
+
+dependencies = [
+    "Jinja2>=3.1",
+    "typer>=0.12",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+repo-oracle = "repo_oracle.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/graydeon/repo-oracle"
+Repository = "https://github.com/graydeon/repo-oracle"
+Issues = "https://github.com/graydeon/repo-oracle/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.repo-oracle]
+output_dir = "./repo-oracle-reports"
+exclude = []
+max_files = 10000
+max_file_size_mb = 1

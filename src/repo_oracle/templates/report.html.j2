@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="repo-oracle">
+<title>Repo Oracle Report — {{ report.metadata.repo_name }}</title>
+<style>
+:root,[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--fg:#c9d1d9;--fg2:#f0f6fc;--border:#30363d;--accent:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--dim:#8b949e}
+[data-theme="light"]{--bg:#fff;--bg2:#f6f8fa;--bg3:#e1e4e8;--fg:#24292f;--fg2:#1f2328;--border:#d0d7de;--accent:#0969da;--green:#1a7f37;--yellow:#9a6700;--red:#cf222e;--dim:#656d76}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);display:flex;min-height:100vh;line-height:1.5}
+#sidebar{width:260px;min-width:260px;background:var(--bg2);border-right:1px solid var(--border);padding:1.2em 1em;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:.88em;display:flex;flex-direction:column}
+#sidebar h2{font-size:1.1em;color:var(--fg2);margin-bottom:.8em;border-bottom:1px solid var(--border);padding-bottom:.4em}
+#sidebar nav{flex:1;overflow-y:auto}
+#sidebar a{display:block;padding:.35em .6em;border-radius:4px;color:var(--dim);text-decoration:none;transition:background .15s}
+#sidebar a:hover,#sidebar a.active{background:var(--bg3);color:var(--fg2)}
+#sidebar .sidebar-section{margin:.8em 0}
+#sidebar .sidebar-section>strong{display:block;margin-bottom:.3em;color:var(--fg2);font-size:.85em;text-transform:uppercase;letter-spacing:.05em}
+#sidebar .conf-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+#sidebar .theme-toggle{margin-top:1em;padding:.5em;background:var(--bg3);border:1px solid var(--border);color:var(--fg);border-radius:6px;cursor:pointer;font-size:.85em;text-align:center}
+#sidebar .theme-toggle:hover{background:var(--border)}
+#content{flex:1;padding:2em;max-width:960px;overflow-y:auto}
+h1{font-size:1.5em;color:var(--fg2);margin-bottom:.3em}
+h2{font-size:1.2em;color:var(--fg2);border-bottom:1px solid var(--border);padding-bottom:.3em;margin:1.8em 0 .8em}
+h3{font-size:1.05em;color:var(--fg2);margin:1.2em 0 .5em}
+table{width:100%;border-collapse:collapse;margin:1em 0;font-size:.92em}
+th,td{border:1px solid var(--border);padding:.5em .7em;text-align:left}
+th{background:var(--bg2);font-weight:600;color:var(--fg2)}
+td{font-size:.9em}
+pre{background:var(--bg2);border-radius:6px;padding:1em;overflow-x:auto;font-size:.86em;line-height:1.4}
+code{background:var(--bg2);padding:.15em .4em;border-radius:3px;font-size:.9em}
+a{color:var(--accent)}
+.badge{display:inline-block;padding:.15em .6em;border-radius:4px;font-size:.8em;font-weight:600;margin:0 .2em}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.4em 1em;margin:1em 0}
+.meta-item{font-size:.88em;color:var(--dim)}
+.meta-item strong{color:var(--fg)}
+.summary-box{background:var(--bg2);border-radius:8px;padding:1.2em 1.5em;margin:1em 0;border:1px solid var(--border)}
+.summary-box p{font-size:1.02em;line-height:1.6}
+.dim-row{border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:background .1s}
+.dim-row:hover{background:var(--bg3)}
+.dim-row .dim-header{display:flex;align-items:center;gap:.6em;padding:.55em .7em}
+.dim-row .dim-header .dim-name{flex:1;font-weight:500;font-size:.92em}
+.dim-row .dim-body{display:none;padding:.5em 1em 1em 2.2em;font-size:.9em;color:var(--dim);border-top:1px solid var(--border)}
+.dim-row.open .dim-body{display:block}
+.rec-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1em 1.2em;margin:1em 0}
+.rec-card .rec-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5em}
+.rec-card .rec-title{font-weight:600;color:var(--fg2)}
+.security-note{background:rgba(248,81,73,.08);border:1px solid var(--red);border-radius:6px;padding:.6em 1em;margin:.5em 0;font-size:.9em}
+.unknown-box{background:var(--bg2);border:1px solid var(--dim);border-radius:6px;padding:.6em 1em;margin:.5em 0}
+.next-action{padding:.4em .8em;margin:.3em 0;background:rgba(63,185,80,.08);border-radius:4px;border-left:3px solid var(--green);font-size:.92em}
+.evidence-ref{font-family:monospace;font-size:.85em;color:var(--accent)}
+.footer{margin-top:3em;padding-top:1em;border-top:1px solid var(--border);font-size:.82em;color:var(--dim)}
+.chart-bar{display:flex;align-items:center;gap:.5em;margin:.3em 0}
+.chart-bar .bar-label{width:90px;text-align:right;font-size:.85em;color:var(--dim);flex-shrink:0}
+.chart-bar .bar-fill{height:18px;border-radius:3px;min-width:2px;transition:width .3s}
+.chart-bar .bar-count{font-size:.82em;color:var(--dim);margin-left:.3em}
+@media(max-width:768px){
+  body{flex-direction:column}
+  #sidebar{width:100%;min-width:unset;height:auto;position:static;border-right:none;border-bottom:1px solid var(--border);padding:.8em}
+  #sidebar nav{display:flex;flex-wrap:wrap;gap:.3em}
+  #sidebar a{padding:.25em .5em;font-size:.82em}
+  #sidebar .sidebar-section{margin:.3em 0}
+  #content{padding:1em}
+  .meta-grid{grid-template-columns:1fr}
+}
+.print-only{display:none}
+@media print{
+  #sidebar{display:none}
+  #content{max-width:100%}
+  .print-only{display:block}
+  body{display:block}
+}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:.6em 1.2em;border-radius:6px;font-size:.88em;z-index:100;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <h2>Repo Oracle</h2>
+  <nav>
+    <div class="sidebar-section"><strong>Report</strong>
+      <a href="#summary">Executive Summary</a>
+      <a href="#vitals">Vital Signs</a>
+      <a href="#purpose">Purpose</a>
+    </div>
+    <div class="sidebar-section"><strong>Dimensions</strong>
+      {% for dim in report.dimensions %}
+      <a href="#dim-{{ loop.index }}" title="{{ confidence_badge(dim.confidence) }}">
+        <span class="conf-dot" style="background:{{ confidence_color(dim.confidence) }}"></span>
+        {{ dim.dimension | replace("_", " ") | title }}
+      </a>
+      {% endfor %}
+    </div>
+    <div class="sidebar-section"><strong>Sections</strong>
+      <a href="#security">Security Notes</a>
+      <a href="#contradictions">Unknowns</a>
+      <a href="#recommendations">Recommendations</a>
+      <a href="#actions">Next Actions</a>
+      <a href="#evidence">Evidence</a>
+    </div>
+  </nav>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark theme">☀️ Light Mode</button>
+</aside>
+
+<main id="content">
+<h1>{{ report.metadata.repo_name }}</h1>
+<div class="meta-grid">
+  <div class="meta-item"><strong>Path:</strong> <code>{{ report.metadata.repo_path }}</code></div>
+  <div class="meta-item"><strong>Tier:</strong> {{ report.metadata.analysis_tier }}</div>
+  <div class="meta-item"><strong>Date:</strong> {{ report.metadata.analysis_timestamp[:19] }}</div>
+  <div class="meta-item"><strong>Duration:</strong> {{ "%.1f"|format(report.metadata.analysis_duration_seconds) }}s</div>
+  <div class="meta-item"><strong>GitNexus:</strong> {{ "Yes" if report.metadata.gitnexus_used else "No" }}</div>
+  <div class="meta-item"><strong>Hermes:</strong> {{ report.metadata.hermes_version }}</div>
+</div>
+
+<h2 id="summary">Executive Summary</h2>
+<div class="summary-box"><p>{{ report.executive_summary }}</p></div>
+
+<h2 id="vitals">Vital Signs</h2>
+<table>
+  <tr><th>Metric</th><th>Value</th></tr>
+  <tr><td>Activity</td><td>{{ activity_badge(report.vital_signs.activity) }}</td></tr>
+  <tr><td>Language</td><td>{{ report.vital_signs.language }}</td></tr>
+  <tr><td>Build</td><td>{{ report.vital_signs.build_system }}</td></tr>
+  <tr><td>Files</td><td>{{ report.scanner_output.total_files }} files, {{ report.scanner_output.total_dirs }} dirs, {{ "%.1f"|format(report.scanner_output.total_size_bytes / 1048576) }} MB</td></tr>
+  <tr><td>Git</td><td>{{ "Yes — %d commits"|format(report.scanner_output.commit_count) if report.scanner_output.has_git else "No" }}</td></tr>
+  <tr><td>GitNexus</td><td>{{ "%d symbols"|format(report.scanner_output.gitnexus_symbols) if report.scanner_output.has_gitnexus else "Not indexed" }}</td></tr>
+</table>
+
+{% if report.scanner_output.languages %}
+<h3>Language Breakdown</h3>
+{% set lang_sorted = report.scanner_output.languages | dictsort(false, 'value') | reverse | list %}
+{% set max_count = lang_sorted[0][1] if lang_sorted else 1 %}
+<div style="margin:1em 0;">
+{% for lang, count in lang_sorted[:10] %}
+<div class="chart-bar">
+  <span class="bar-label">{{ lang }}</span>
+  <span class="bar-fill" style="width:{{ (count / max_count * 300) | int }}px;background:{{ ['#58a6ff','#3fb950','#d29922','#f85149','#a371f7','#79c0ff','#56d364','#e3b341','#f0883e','#b392f0'][loop.index0] }}"></span>
+  <span class="bar-count">{{ count }}</span>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<h2 id="purpose">Purpose</h2>
+<div style="padding:.8em 1em;background:var(--bg2);border-radius:6px;border-left:3px solid var(--green);margin:.8em 0">
+  <span class="badge" style="background:{{ confidence_color(report.purpose.confidence) }}20;color:{{ confidence_color(report.purpose.confidence) }};border:1px solid {{ confidence_color(report.purpose.confidence) }}">{{ confidence_badge(report.purpose.confidence) }}</span>
+  <p style="margin-top:.5em;font-size:1.05em">{{ report.purpose.summary }}</p>
+  {% if report.purpose.details %}<p style="color:var(--dim);font-size:.9em;margin-top:.3em">{{ report.purpose.details }}</p>{% endif %}
+</div>
+
+<h2 id="dimensions">Analysis Dimensions</h2>
+{% for dim in report.dimensions %}
+<div class="dim-row" id="dim-{{ loop.index }}" onclick="this.classList.toggle('open')">
+  <div class="dim-header">
+    <span style="font-size:.8em;color:var(--dim)">{{ "▸" if loop.first else "▸" }}</span>
+    <span class="dim-name">{{ dim.dimension | replace("_", " ") | title }}</span>
+    <span class="badge" style="background:{{ confidence_color(dim.confidence) }}20;color:{{ confidence_color(dim.confidence) }};border:1px solid {{ confidence_color(dim.confidence) }}">{{ confidence_badge(dim.confidence) }}</span>
+  </div>
+  <div class="dim-body">
+    <p>{{ dim.summary }}</p>
+    {% if dim.details %}<p style="margin-top:.3em">{{ dim.details }}</p>{% endif %}
+    {% if dim.evidence %}<p style="margin-top:.4em">Evidence: {{ dim.evidence | map("evidence_link") | join(", ") }}</p>{% endif %}
+    {% if dim.assumptions %}<p style="margin-top:.3em;color:var(--yellow)">Assumptions: {{ dim.assumptions | join("; ") }}</p>{% endif %}
+  </div>
+</div>
+{% endfor %}
+
+<h2 id="security">Security Notes</h2>
+{% if report.security_notes %}
+  {% for note in report.security_notes %}<div class="security-note">{{ note }}</div>{% endfor %}
+{% else %}<p>No security notes.</p>{% endif %}
+{% if report.scanner_output.secret_files_detected %}
+  <div class="security-note"><strong>Secret files detected (contents NOT inspected):</strong>
+    <ul style="margin:.3em 0 0 1em">{% for sf in report.scanner_output.secret_files_detected %}<li><code>{{ sf }}</code></li>{% endfor %}</ul>
+  </div>
+{% endif %}
+
+<h2 id="contradictions">Contradictions &amp; Unknowns</h2>
+{% if report.contradictions %}
+{% for c in report.contradictions %}<div style="padding:.5em 1em;background:var(--bg2);border-left:3px solid var(--yellow);border-radius:4px;margin:.5em 0"><strong>{{ c.dimension | replace("_", " ") | title }}</strong>: {{ c.description }}{% if c.resolution %} → {{ c.resolution }}{% endif %}</div>{% endfor %}
+{% else %}<p>No contradictions.</p>{% endif %}
+{% if report.unknowns %}
+{% for u in report.unknowns %}<div class="unknown-box"><strong>{{ u.dimension | replace("_", " ") | title }}</strong> <span class="badge" style="background:var(--dim)20;color:var(--dim);border:1px solid var(--dim)">{{ confidence_badge(u.confidence) }}</span><p style="margin:.3em 0">{{ u.summary }}</p></div>{% endfor %}
+{% else %}<p>No unknowns.</p>{% endif %}
+
+<h2 id="recommendations">Recommendations</h2>
+{% if report.recommendations %}
+{% for rec in report.recommendations %}
+<div class="rec-card">
+  <div class="rec-header">
+    <span class="rec-title">{{ rec.action }}</span>
+    <span>{{ priority_badge(rec.priority) }} <span class="badge" style="background:var(--bg3);color:var(--dim);border:1px solid var(--border);font-size:.78em">{{ rec.category }}</span></span>
+  </div>
+  <p style="margin:.5em 0;font-size:.92em">{{ rec.justification }}</p>
+  {% if rec.risks_of_inaction %}<p style="font-size:.9em;color:var(--red);margin-top:.3em">⚠ {{ rec.risks_of_inaction }}</p>{% endif %}
+  <p style="font-size:.85em;color:var(--dim);margin-top:.4em">Effort: {{ rec.estimated_effort }} · Evidence: {{ rec.evidence | map("evidence_link") | join(", ") }}</p>
+</div>
+{% endfor %}
+{% else %}<p>No recommendations.</p>{% endif %}
+
+<h2 id="actions">Next Actions</h2>
+{% if report.next_actions %}
+{% for action in report.next_actions %}<div class="next-action">{{ loop.index }}. {{ action }}</div>{% endfor %}
+{% else %}<p>No specific next actions.</p>{% endif %}
+
+<h2 id="evidence">Evidence Registry</h2>
+{% if report.evidence_registry %}
+<table>
+  <tr><th>ID</th><th>Type</th><th>Description</th></tr>
+  {% for eid, es in report.evidence_registry.items() %}
+  <tr><td><code class="evidence-ref">{{ eid }}</code></td><td>{{ es.type }}</td><td>{{ es.description }}</td></tr>
+  {% endfor %}
+</table>
+{% else %}<p>No evidence registered.</p>{% endif %}
+
+<div class="footer">
+  Generated by <strong>repo-oracle</strong> {{ report.metadata.hermes_version }} ·
+  {{ report.metadata.analysis_tier }} tier ·
+  {{ report.metadata.total_tool_calls }} tool calls ·
+  <a href="./{{ report_filename_json }}">Raw JSON</a>
+  <span class="print-only"> · Printed {{ report.metadata.analysis_timestamp[:19] }}</span>
+</div>
+</main>
+
+<div id="toast" class="toast">Copied!</div>
+
+<script>
+function toggleTheme(){const e=document.documentElement,t=e.getAttribute("data-theme")==="dark"?"light":"dark";e.setAttribute("data-theme",t);const b=document.querySelector(".theme-toggle");b.innerHTML=t==="dark"?"☀️ Light Mode":"🌙 Dark Mode"}
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".dim-row").forEach(r=>{r.querySelector(".dim-header").addEventListener("click",e=>{e.stopPropagation();r.classList.toggle("open")})})});
+document.addEventListener("DOMContentLoaded",()=>{const a=document.querySelectorAll("#sidebar a");if(a.length){const o=()=>{const s=window.scrollY;let c=a[0];a.forEach(e=>{const t=document.querySelector(e.getAttribute("href"));if(t){const r=t.getBoundingClientRect().top+s-120;if(s>=r)c=e}});a.forEach(e=>e.classList.remove("active"));c.classList.add("active")};window.addEventListener("scroll",o);o()}});
+function copyJSON(){const u=window.location.href.replace(".html",".json");navigator.clipboard.writeText(u).then(()=>{const t=document.getElementById("toast");t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2000)})}
+</script>
+</body>
+</html>
