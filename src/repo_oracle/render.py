@@ -71,14 +71,18 @@ def _activity_badge(activity: str) -> str:
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
 _HTML_TEMPLATE_PATH = _TEMPLATE_DIR / "report.html.j2"
 
+
 def _load_template() -> Template:
     """Load the Jinja2 template from file, with inline fallback."""
     if _HTML_TEMPLATE_PATH.is_file():
         return Template(_HTML_TEMPLATE_PATH.read_text())
-    return Template("<html><body><h1>{{ report.metadata.repo_name }}</h1><p>Report template not found.</p></body></html>")
+    return Template(
+        "<html><body><h1>{{ report.metadata.repo_name }}</h1><p>Report template not found.</p></body></html>"
+    )
 
 
 _MD_TEMPLATE_PATH = _TEMPLATE_DIR / "report.md.j2"
+
 
 def _load_md_template() -> Template:
     if _MD_TEMPLATE_PATH.is_file():
@@ -95,6 +99,7 @@ def render_markdown(report: dict) -> str:
 
 # ── Jinja2 Filter Helpers ───────────────────────────────────────────────────
 
+
 def _confidence_color(confidence: str) -> str:
     return CONFIDENCE_COLORS.get(confidence, "#8b949e")
 
@@ -104,6 +109,7 @@ def _evidence_link(eid: str) -> str:
 
 
 # ── Render Function ─────────────────────────────────────────────────────────
+
 
 def render_report(report: dict, json_filename: str = "") -> str:
     """Render a Report dict to standalone HTML string."""
@@ -126,6 +132,7 @@ def render_report(report: dict, json_filename: str = "") -> str:
 
 
 # ── CLI Entry Point ─────────────────────────────────────────────────────────
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(

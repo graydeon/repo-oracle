@@ -150,7 +150,9 @@ class TestScanRepo:
             Path(tmpdir, "README.md").write_text("# Test Repo")
             Path(tmpdir, "main.py").write_text("print('hello')")
             Path(tmpdir, "pyproject.toml").write_text("[project]\nname='test'")
-            Path(tmpdir, ".env").write_text("SECRET=xxx")  # Should be detected but never read
+            Path(tmpdir, ".env").write_text(
+                "SECRET=xxx"
+            )  # Should be detected but never read
 
             result = scan_repo(tmpdir)
 

@@ -21,6 +21,7 @@ class TestNaming:
         assert name.endswith(".json")
         # Today's date should be in it
         from datetime import date
+
         assert date.today().isoformat() in name
 
     def test_report_filename_with_suffix(self):
@@ -37,6 +38,7 @@ class TestNaming:
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create a file that would collide
             import datetime
+
             today = datetime.date.today().isoformat()
             Path(tmpdir, f"repo-oracle-test-{today}.json").write_text("{}")
             result = _next_collision_suffix(Path(tmpdir), "test", "json")
@@ -62,11 +64,20 @@ class TestWriteReports:
             # Create dummy JSON and HTML reports
             json_path = Path(tmpdir, "test-report.json")
             html_path = Path(tmpdir, "test-report.html")
-            json_path.write_text(json.dumps({
-                "metadata": {"repo_name": "test-project", "repo_slug": "test-project"},
-                "executive_summary": "A test project."
-            }))
-            html_path.write_text("<!DOCTYPE html><html><body><h1>Test</h1></body></html>")
+            json_path.write_text(
+                json.dumps(
+                    {
+                        "metadata": {
+                            "repo_name": "test-project",
+                            "repo_slug": "test-project",
+                        },
+                        "executive_summary": "A test project.",
+                    }
+                )
+            )
+            html_path.write_text(
+                "<!DOCTYPE html><html><body><h1>Test</h1></body></html>"
+            )
 
             # Create a fake context repo structure
             context_dir = Path(tmpdir, "context-repo")

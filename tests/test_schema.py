@@ -24,27 +24,51 @@ def _make_valid_report() -> Report:
     """Build a minimal valid report for testing."""
     report = empty_report("/tmp/test-repo", "test-repo", "test-repo")
     report["executive_summary"] = "A test repository."
-    report["purpose"] = new_finding("purpose", "HIGH", "Test repo for schema validation",
-                                     ["scan:language"], "A test project.")
-    report["vital_signs"] = {"activity": "DORMANT", "language": "Python", "build_system": "setuptools"}
+    report["purpose"] = new_finding(
+        "purpose",
+        "HIGH",
+        "Test repo for schema validation",
+        ["scan:language"],
+        "A test project.",
+    )
+    report["vital_signs"] = {
+        "activity": "DORMANT",
+        "language": "Python",
+        "build_system": "setuptools",
+    }
 
     # Populate all dimensions
     for i, dim in enumerate(ALL_DIMENSIONS):
-        report["dimensions"][i] = new_finding(dim, "MEDIUM", f"Assessment of {dim}",
-                                               [f"scan:dim:{dim}"], f"Details for {dim}")
+        report["dimensions"][i] = new_finding(
+            dim,
+            "MEDIUM",
+            f"Assessment of {dim}",
+            [f"scan:dim:{dim}"],
+            f"Details for {dim}",
+        )
 
     report["evidence_registry"] = {
-        "scan:language": new_evidence("scan:language", "scan", "Scanner detected Python"),
+        "scan:language": new_evidence(
+            "scan:language", "scan", "Scanner detected Python"
+        ),
         "scan:dim:purpose": new_evidence("scan:dim:purpose", "scan", "Scanner output"),
     }
     for dim in ALL_DIMENSIONS:
         report["evidence_registry"][f"scan:dim:{dim}"] = new_evidence(
-            f"scan:dim:{dim}", "scan", f"Evidence for {dim}")
+            f"scan:dim:{dim}", "scan", f"Evidence for {dim}"
+        )
 
     report["recommendations"] = [
-        new_recommendation("rec-1", "DOCUMENT", "MEDIUM", "Add a README",
-                            "No README found", ["scan:dim:documentation_quality"],
-                            "SMALL", "Project remains undiscoverable"),
+        new_recommendation(
+            "rec-1",
+            "DOCUMENT",
+            "MEDIUM",
+            "Add a README",
+            "No README found",
+            ["scan:dim:documentation_quality"],
+            "SMALL",
+            "Project remains undiscoverable",
+        ),
     ]
     report["next_actions"] = ["Write README.md", "Add CI pipeline"]
     report["security_notes"] = ["No secret files detected"]
@@ -53,7 +77,9 @@ def _make_valid_report() -> Report:
 
 class TestConstants:
     def test_dimension_counts(self):
-        assert len(DIMENSION_NAMES) == 14, "Must have exactly 14 core analysis dimensions"
+        assert len(DIMENSION_NAMES) == 14, (
+            "Must have exactly 14 core analysis dimensions"
+        )
         assert len(META_DIMENSIONS) == 3, "Must have exactly 3 meta dimensions"
         assert len(ALL_DIMENSIONS) == 17
 
@@ -74,10 +100,19 @@ class TestEmptyReport:
     def test_has_all_top_level_keys(self):
         report = empty_report("/tmp/foo")
         required = {
-            "metadata", "executive_summary", "purpose", "vital_signs",
-            "dimensions", "evidence_registry", "contradictions", "unknowns",
-            "security_notes", "recommendations", "next_actions",
-            "scanner_output", "subagent_summaries",
+            "metadata",
+            "executive_summary",
+            "purpose",
+            "vital_signs",
+            "dimensions",
+            "evidence_registry",
+            "contradictions",
+            "unknowns",
+            "security_notes",
+            "recommendations",
+            "next_actions",
+            "scanner_output",
+            "subagent_summaries",
         }
         assert set(report.keys()) == required
 

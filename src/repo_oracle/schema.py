@@ -61,9 +61,10 @@ ALL_DIMENSIONS: list[str] = DIMENSION_NAMES + META_DIMENSIONS
 
 # ── TypedDicts ──────────────────────────────────────────────────────────────
 
+
 class EvidenceSource(TypedDict):
-    id: str              # e.g. "file:src/main.py:1-50"
-    type: EvidenceType   # file, git, scan, web, inference
+    id: str  # e.g. "file:src/main.py:1-50"
+    type: EvidenceType  # file, git, scan, web, inference
     description: str
 
 
@@ -71,7 +72,7 @@ class Finding(TypedDict):
     dimension: str
     confidence: Confidence
     summary: str
-    evidence: list[str]   # EvidenceSource IDs
+    evidence: list[str]  # EvidenceSource IDs
     details: str
     assumptions: list[str]
 
@@ -99,7 +100,7 @@ class ReportMetadata(TypedDict):
     repo_path: str
     repo_name: str
     repo_slug: str
-    analysis_timestamp: str       # ISO 8601
+    analysis_timestamp: str  # ISO 8601
     hermes_version: str
     gitnexus_used: bool
     analysis_tier: Tier
@@ -109,6 +110,7 @@ class ReportMetadata(TypedDict):
 
 class ScannerOutput(TypedDict):
     """Deterministic scanner output. See scanner.py for the full contract."""
+
     repo_path: str
     repo_name: str
     repo_slug: str
@@ -127,7 +129,7 @@ class ScannerOutput(TypedDict):
     untracked_count: int
     modified_count: int
     staged_count: int
-    languages: dict[str, int]          # language → file count
+    languages: dict[str, int]  # language → file count
     build_systems: list[str]
     test_frameworks: list[str]
     entrypoints: list[str]
@@ -135,7 +137,7 @@ class ScannerOutput(TypedDict):
     total_dirs: int
     total_size_bytes: int
     excluded_count: int
-    secret_files_detected: list[str]   # paths only, contents never read
+    secret_files_detected: list[str]  # paths only, contents never read
     monorepo_signal: bool
     top_level_dirs: list[str]
     dependency_files: list[str]
@@ -149,14 +151,14 @@ class Report(TypedDict):
     metadata: ReportMetadata
     executive_summary: str
     purpose: Finding
-    vital_signs: dict             # activity, language, build_system
-    dimensions: list[Finding]     # All 14 analysis + 3 meta dimensions
+    vital_signs: dict  # activity, language, build_system
+    dimensions: list[Finding]  # All 14 analysis + 3 meta dimensions
     evidence_registry: dict[str, EvidenceSource]
     contradictions: list[Contradiction]
     unknowns: list[Finding]
     security_notes: list[str]
     recommendations: list[Recommendation]
-    next_actions: list[str]       # Ordered, actionable
+    next_actions: list[str]  # Ordered, actionable
     scanner_output: ScannerOutput
     subagent_summaries: list[str]
 
@@ -168,15 +170,24 @@ VALID_PRIORITIES: set[str] = {"URGENT", "HIGH", "MEDIUM", "LOW", "INFORMATIONAL"
 VALID_EFFORTS: set[str] = {"TRIVIAL", "SMALL", "MEDIUM", "LARGE"}
 VALID_TIERS: set[str] = {"QUICK", "DEEP", "EXHAUSTIVE"}
 VALID_CATEGORIES: set[str] = {
-    "REVIVE", "ARCHIVE", "DOCUMENT", "TEST-FIRST-REPAIR",
-    "DEPENDENCY-UPDATE", "SECURITY-HARDENING", "EXTRACT-CODE",
-    "REWRITE", "DELETE-CANDIDATE", "PRODUCTIZE", "MAINTAIN-AS-IS",
+    "REVIVE",
+    "ARCHIVE",
+    "DOCUMENT",
+    "TEST-FIRST-REPAIR",
+    "DEPENDENCY-UPDATE",
+    "SECURITY-HARDENING",
+    "EXTRACT-CODE",
+    "REWRITE",
+    "DELETE-CANDIDATE",
+    "PRODUCTIZE",
+    "MAINTAIN-AS-IS",
 }
 VALID_EVIDENCE_TYPES: set[str] = {"file", "git", "scan", "web", "inference"}
 
 
 class ValidationError(ValueError):
     """Raised when a report fails schema validation."""
+
     pass
 
 
@@ -189,12 +200,20 @@ def validate_report(report: Report) -> list[str]:
     if not isinstance(meta, dict):
         errors.append("metadata: missing or not a dict")
     else:
-        for field in ("repo_path", "repo_name", "repo_slug", "analysis_timestamp",
-                       "hermes_version", "analysis_tier"):
+        for field in (
+            "repo_path",
+            "repo_name",
+            "repo_slug",
+            "analysis_timestamp",
+            "hermes_version",
+            "analysis_tier",
+        ):
             if field not in meta:
                 errors.append(f"metadata.{field}: missing")
         if meta.get("analysis_tier") not in VALID_TIERS:
-            errors.append(f"metadata.analysis_tier: invalid tier '{meta.get('analysis_tier')}'")
+            errors.append(
+                f"metadata.analysis_tier: invalid tier '{meta.get('analysis_tier')}'"
+            )
         if not isinstance(meta.get("gitnexus_used"), bool):
             errors.append("metadata.gitnexus_used: must be bool")
         if not isinstance(meta.get("total_tool_calls"), int):
@@ -240,7 +259,9 @@ def validate_report(report: Report) -> list[str]:
                 errors.append(f"evidence_registry['{eid}']: not a dict")
                 continue
             if es.get("type") not in VALID_EVIDENCE_TYPES:
-                errors.append(f"evidence_registry['{eid}'].type: invalid '{es.get('type')}'")
+                errors.append(
+                    f"evidence_registry['{eid}'].type: invalid '{es.get('type')}'"
+                )
 
     # Contradictions
     contradictions = report.get("contradictions", [])
@@ -287,8 +308,10 @@ def validate_report_strict(report: Report) -> None:
     """Validate and raise ValidationError if any errors found."""
     errors = validate_report(report)
     if errors:
-        raise ValidationError(f"Report validation failed with {len(errors)} error(s):\n" +
-                               "\n".join(f"  - {e}" for e in errors))
+        raise ValidationError(
+            f"Report validation failed with {len(errors)} error(s):\n"
+            + "\n".join(f"  - {e}" for e in errors)
+        )
 
 
 def _validate_finding(finding: object, path: str, errors: list[str]) -> None:
@@ -316,7 +339,9 @@ def _validate_recommendation(rec: object, path: str, errors: list[str]) -> None:
     if rec.get("priority") not in VALID_PRIORITIES:
         errors.append(f"{path}.priority: invalid '{rec.get('priority')}'")
     if rec.get("estimated_effort") not in VALID_EFFORTS:
-        errors.append(f"{path}.estimated_effort: invalid '{rec.get('estimated_effort')}'")
+        errors.append(
+            f"{path}.estimated_effort: invalid '{rec.get('estimated_effort')}'"
+        )
     if not isinstance(rec.get("evidence"), list):
         errors.append(f"{path}.evidence: missing or not a list")
     if not rec.get("evidence"):
@@ -327,6 +352,7 @@ def _validate_recommendation(rec: object, path: str, errors: list[str]) -> None:
 
 # ── JSON Schema Generation ──────────────────────────────────────────────────
 
+
 def generate_json_schema() -> dict:
     """Generate a JSON Schema (draft-07) for Report validation."""
     return {
@@ -336,18 +362,33 @@ def generate_json_schema() -> dict:
         "description": "Canonical schema for repo-oracle investigation reports",
         "type": "object",
         "required": [
-            "metadata", "executive_summary", "purpose", "vital_signs",
-            "dimensions", "evidence_registry", "contradictions", "unknowns",
-            "security_notes", "recommendations", "next_actions",
-            "scanner_output", "subagent_summaries",
+            "metadata",
+            "executive_summary",
+            "purpose",
+            "vital_signs",
+            "dimensions",
+            "evidence_registry",
+            "contradictions",
+            "unknowns",
+            "security_notes",
+            "recommendations",
+            "next_actions",
+            "scanner_output",
+            "subagent_summaries",
         ],
         "properties": {
             "metadata": {
                 "type": "object",
                 "required": [
-                    "repo_path", "repo_name", "repo_slug", "analysis_timestamp",
-                    "hermes_version", "gitnexus_used", "analysis_tier",
-                    "total_tool_calls", "analysis_duration_seconds",
+                    "repo_path",
+                    "repo_name",
+                    "repo_slug",
+                    "analysis_timestamp",
+                    "hermes_version",
+                    "gitnexus_used",
+                    "analysis_tier",
+                    "total_tool_calls",
+                    "analysis_duration_seconds",
                 ],
                 "properties": {
                     "repo_path": {"type": "string"},
@@ -409,7 +450,14 @@ def generate_json_schema() -> dict:
         "$defs": {
             "finding": {
                 "type": "object",
-                "required": ["dimension", "confidence", "summary", "evidence", "details", "assumptions"],
+                "required": [
+                    "dimension",
+                    "confidence",
+                    "summary",
+                    "evidence",
+                    "details",
+                    "assumptions",
+                ],
                 "properties": {
                     "dimension": {"type": "string"},
                     "confidence": {"enum": list(VALID_CONFIDENCES)},
@@ -431,8 +479,15 @@ def generate_json_schema() -> dict:
             "recommendation": {
                 "type": "object",
                 "required": [
-                    "id", "category", "priority", "action", "justification",
-                    "evidence", "estimated_effort", "risks_of_inaction", "assumptions",
+                    "id",
+                    "category",
+                    "priority",
+                    "action",
+                    "justification",
+                    "evidence",
+                    "estimated_effort",
+                    "risks_of_inaction",
+                    "assumptions",
                 ],
                 "properties": {
                     "id": {"type": "string"},
@@ -440,7 +495,11 @@ def generate_json_schema() -> dict:
                     "priority": {"enum": list(VALID_PRIORITIES)},
                     "action": {"type": "string"},
                     "justification": {"type": "string"},
-                    "evidence": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+                    "evidence": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "minItems": 1,
+                    },
                     "estimated_effort": {"enum": list(VALID_EFFORTS)},
                     "risks_of_inaction": {"type": "string"},
                     "assumptions": {"type": "array", "items": {"type": "string"}},
@@ -462,6 +521,7 @@ def generate_json_schema() -> dict:
 
 # ── Convenience ─────────────────────────────────────────────────────────────
 
+
 def report_to_json(report: Report, indent: int = 2) -> str:
     """Serialize a Report to JSON string."""
     return json.dumps(report, indent=indent, ensure_ascii=False)
@@ -481,6 +541,7 @@ def new_metadata(
 ) -> ReportMetadata:
     """Create a ReportMetadata with defaults."""
     from datetime import datetime, timezone
+
     return ReportMetadata(
         repo_path=repo_path,
         repo_name=repo_name,
@@ -551,13 +612,20 @@ def empty_report(
     """Create an empty but valid Report skeleton for a repo."""
     if not repo_slug:
         import re
-        repo_slug = re.sub(r"[^a-z0-9]+", "-", (repo_name or "unknown").lower()).strip("-")
+
+        repo_slug = re.sub(r"[^a-z0-9]+", "-", (repo_name or "unknown").lower()).strip(
+            "-"
+        )
 
     return Report(
         metadata=new_metadata(repo_path, repo_name or repo_path, repo_slug),
         executive_summary="",
         purpose=new_finding("purpose"),
-        vital_signs={"activity": "UNKNOWN", "language": "UNKNOWN", "build_system": "UNKNOWN"},
+        vital_signs={
+            "activity": "UNKNOWN",
+            "language": "UNKNOWN",
+            "build_system": "UNKNOWN",
+        },
         dimensions=[new_finding(dim) for dim in ALL_DIMENSIONS],
         evidence_registry={},
         contradictions=[],

@@ -1,4 +1,5 @@
 """repo-oracle entry point: python -m repo_oracle"""
+
 import sys
 from repo_oracle.cli import app
 

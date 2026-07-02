@@ -27,6 +27,7 @@ REPORTS_ROOT = "research/repo-oracle/reports"
 
 # ── File Naming ─────────────────────────────────────────────────────────────
 
+
 def _report_filename(repo_slug: str, ext: str, suffix: str = "") -> str:
     """Generate a report filename: repo-oracle-<slug>-YYYY-MM-DD[<suffix>].<ext>"""
     today = date.today().isoformat()
@@ -50,10 +51,12 @@ def _next_collision_suffix(reports_dir: Path, repo_slug: str, ext: str) -> str:
             return f"-{suffix}"
     # Fallback: timestamp-based
     from time import time
+
     return f"-{int(time())}"
 
 
 # ── Index Generation ────────────────────────────────────────────────────────
+
 
 def _generate_repo_index(repodir: Path, repo_slug: str) -> str:
     """Generate the per-repo index.html listing all reports for a repo slug."""
@@ -66,25 +69,30 @@ def _generate_repo_index(repodir: Path, repo_slug: str) -> str:
             try:
                 content = f.read_text()
                 import re
-                match = re.search(r'<div class="summary-box">\s*<p>(.*?)</p>', content, re.DOTALL)
+
+                match = re.search(
+                    r'<div class="summary-box">\s*<p>(.*?)</p>', content, re.DOTALL
+                )
                 if match:
                     summary = match.group(1).strip()[:200]
             except Exception:
                 pass
             file_date = f.stem.replace(f"repo-oracle-{repo_slug}-", "")
-            reports.append({
-                "filename": f.name,
-                "json_filename": f"{f.stem}.json",
-                "date": file_date,
-                "summary": summary,
-            })
+            reports.append(
+                {
+                    "filename": f.name,
+                    "json_filename": f"{f.stem}.json",
+                    "date": file_date,
+                    "summary": summary,
+                }
+            )
 
     reports_html = ""
     for r in reports:
         reports_html += f"""    <tr>
       <td>{r["date"]}</td>
-      <td><a href="./{r['filename']}">HTML Report</a> &middot; <a href="./{r['json_filename']}">JSON</a></td>
-      <td>{r['summary'][:150]}</td>
+      <td><a href="./{r["filename"]}">HTML Report</a> &middot; <a href="./{r["json_filename"]}">JSON</a></td>
+      <td>{r["summary"][:150]}</td>
     </tr>
 """
 
@@ -137,30 +145,35 @@ def _generate_global_index(reports_root: Path) -> str:
                 latest = html_files[0].stem.replace(f"repo-oracle-{slug_dir.name}-", "")
                 try:
                     import re
+
                     content = html_files[0].read_text()
-                    match = re.search(r'<div class="summary-box">\s*<p>(.*?)</p>', content, re.DOTALL)
+                    match = re.search(
+                        r'<div class="summary-box">\s*<p>(.*?)</p>', content, re.DOTALL
+                    )
                     if match:
                         latest_summary = match.group(1).strip()[:150]
                 except Exception:
                     pass
-            repos.append({
-                "slug": slug_dir.name,
-                "report_count": count,
-                "latest_date": latest,
-                "latest_summary": latest_summary,
-            })
+            repos.append(
+                {
+                    "slug": slug_dir.name,
+                    "report_count": count,
+                    "latest_date": latest,
+                    "latest_summary": latest_summary,
+                }
+            )
 
     repos_html = ""
     for r in repos:
         repos_html += f"""    <tr>
-      <td><a href="./{r['slug']}/index.html"><code>{r['slug']}</code></a></td>
-      <td>{r['report_count']}</td>
-      <td>{r['latest_date']}</td>
-      <td>{r['latest_summary'][:120]}</td>
+      <td><a href="./{r["slug"]}/index.html"><code>{r["slug"]}</code></a></td>
+      <td>{r["report_count"]}</td>
+      <td>{r["latest_date"]}</td>
+      <td>{r["latest_summary"][:120]}</td>
     </tr>
 """
     if not repos:
-        repos_html = "    <tr><td colspan=\"4\">No reports yet.</td></tr>\n"
+        repos_html = '    <tr><td colspan="4">No reports yet.</td></tr>\n'
 
     now = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p %Z")
 
@@ -195,6 +208,7 @@ def _generate_global_index(reports_root: Path) -> str:
 
 
 # ── Main Write Function ─────────────────────────────────────────────────────
+
 
 def write_reports(
     json_path: str,
@@ -285,19 +299,24 @@ def _git_add_commit(context_repo_path: str, repo_slug: str, result: dict) -> Non
     ]
     subprocess.run(
         ["git", "-C", context_repo_path, "add"] + paths,
-        capture_output=True, text=True, timeout=10,
+        capture_output=True,
+        text=True,
+        timeout=10,
         check=True,
     )
     # Check if there's anything staged
     proc = subprocess.run(
         ["git", "-C", context_repo_path, "diff", "--cached", "--quiet"],
-        capture_output=True, timeout=10,
+        capture_output=True,
+        timeout=10,
     )
     if proc.returncode != 0:
         msg = f"repo-oracle: add report for {repo_slug}"
         subprocess.run(
             ["git", "-C", context_repo_path, "commit", "-m", msg],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
             check=True,
         )
 
@@ -306,12 +325,15 @@ def _git_push(context_repo_path: str) -> None:
     """Push to origin main."""
     subprocess.run(
         ["git", "-C", context_repo_path, "push", "origin", "main"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True,
+        text=True,
+        timeout=30,
         check=True,
     )
 
 
 # ── CLI Entry Point ─────────────────────────────────────────────────────────
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -319,9 +341,14 @@ def main() -> None:
     )
     parser.add_argument("--json", required=True, help="Path to JSON report file")
     parser.add_argument("--html", required=True, help="Path to HTML report file")
-    parser.add_argument("--slug", required=True, help="Repository slug (sanitized name)")
-    parser.add_argument("--context-repo", default=DEFAULT_CONTEXT_REPO,
-                        help=f"Path to context repo (default: {DEFAULT_CONTEXT_REPO})")
+    parser.add_argument(
+        "--slug", required=True, help="Repository slug (sanitized name)"
+    )
+    parser.add_argument(
+        "--context-repo",
+        default=DEFAULT_CONTEXT_REPO,
+        help=f"Path to context repo (default: {DEFAULT_CONTEXT_REPO})",
+    )
     parser.add_argument("--no-git", action="store_true", help="Skip git commit")
     parser.add_argument("--no-push", action="store_true", help="Skip git push")
     args = parser.parse_args()
@@ -348,8 +375,12 @@ def main() -> None:
         print("  Git: committed")
     if result["git_pushed"]:
         print("  Git: pushed to origin")
-    print(f"\nHosted URL: http://192.168.50.43:8088/local-project-context/{REPORTS_ROOT}/{args.slug}/")
-    print(f"           or https://context.home.arpa/local-project-context/{REPORTS_ROOT}/{args.slug}/")
+    print(
+        f"\nHosted URL: http://192.168.50.43:8088/local-project-context/{REPORTS_ROOT}/{args.slug}/"
+    )
+    print(
+        f"           or https://context.home.arpa/local-project-context/{REPORTS_ROOT}/{args.slug}/"
+    )
 
 
 if __name__ == "__main__":

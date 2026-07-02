@@ -10,18 +10,27 @@ from repo_oracle.render import (
     _priority_badge,
     _activity_badge,
 )
-from repo_oracle.schema import empty_report, new_finding, new_recommendation, new_evidence, ALL_DIMENSIONS
+from repo_oracle.schema import (
+    empty_report,
+    new_finding,
+    new_recommendation,
+    new_evidence,
+    ALL_DIMENSIONS,
+)
 
 
 def _make_test_report() -> dict:
     """Build a comprehensive test report for rendering."""
     report = empty_report("/tmp/test-project", "test-project", "test-project")
-    report["executive_summary"] = "A test project used for renderer verification. This project demonstrates various report features including findings, recommendations, security notes, and unknowns."
+    report["executive_summary"] = (
+        "A test project used for renderer verification. This project demonstrates various report features including findings, recommendations, security notes, and unknowns."
+    )
     report["purpose"] = new_finding(
-        "purpose", "HIGH",
+        "purpose",
+        "HIGH",
         "Test project for rendering validation",
         ["scan:readme", "scan:main.py"],
-        "The project contains a main.py entrypoint and comprehensive README explaining its purpose."
+        "The project contains a main.py entrypoint and comprehensive README explaining its purpose.",
     )
     report["purpose"]["assumptions"] = ["Assumed Python 3.11+ is the target runtime"]
 
@@ -35,36 +44,50 @@ def _make_test_report() -> dict:
     for i, dim in enumerate(ALL_DIMENSIONS):
         conf = "HIGH" if i < 5 else "MEDIUM" if i < 12 else "LOW"
         report["dimensions"][i] = new_finding(
-            dim, conf,
+            dim,
+            conf,
             f"Assessment for {dim}",
             [f"scan:dim:{dim}"],
-            f"Detailed analysis of {dim}."
+            f"Detailed analysis of {dim}.",
         )
     # Mark one as N/A
     report["dimensions"][-1]["confidence"] = "N/A"
 
     # Evidence registry
     report["evidence_registry"] = {
-        "scan:readme": new_evidence("scan:readme", "scan", "README.md describes the project"),
-        "scan:main.py": new_evidence("scan:main.py", "scan", "Entrypoint at main.py:1-10"),
+        "scan:readme": new_evidence(
+            "scan:readme", "scan", "README.md describes the project"
+        ),
+        "scan:main.py": new_evidence(
+            "scan:main.py", "scan", "Entrypoint at main.py:1-10"
+        ),
     }
     for dim in ALL_DIMENSIONS:
         report["evidence_registry"][f"scan:dim:{dim}"] = new_evidence(
-            f"scan:dim:{dim}", "scan", f"Evidence for {dim}")
+            f"scan:dim:{dim}", "scan", f"Evidence for {dim}"
+        )
 
     # Recommendations
     report["recommendations"] = [
         new_recommendation(
-            "rec-1", "DOCUMENT", "MEDIUM", "Add architecture documentation",
+            "rec-1",
+            "DOCUMENT",
+            "MEDIUM",
+            "Add architecture documentation",
             "The project lacks an ARCHITECTURE.md file describing component layout.",
             ["scan:dim:documentation_quality"],
-            "SMALL", "New contributors will struggle to understand the codebase.",
+            "SMALL",
+            "New contributors will struggle to understand the codebase.",
         ),
         new_recommendation(
-            "rec-2", "DEPENDENCY-UPDATE", "HIGH", "Update stale dependencies",
+            "rec-2",
+            "DEPENDENCY-UPDATE",
+            "HIGH",
+            "Update stale dependencies",
             "pyproject.toml pins packages to versions over 2 years old.",
             ["scan:dim:stale_dependencies"],
-            "MEDIUM", "Security vulnerabilities may exist in outdated packages.",
+            "MEDIUM",
+            "Security vulnerabilities may exist in outdated packages.",
             ["Assumes pip install still works for pinned versions"],
         ),
     ]
@@ -88,7 +111,8 @@ def _make_test_report() -> dict:
     # Unknowns
     report["unknowns"] = [
         new_finding(
-            "deployment_clues", "UNKNOWN",
+            "deployment_clues",
+            "UNKNOWN",
             "No Dockerfiles, CI/CD configs, or hosting configurations found.",
             [],
             "The project may be run locally only, or deployment configuration lives outside this repo.",
@@ -114,8 +138,15 @@ def _make_test_report() -> dict:
     report["scanner_output"]["has_gitnexus"] = True
     report["scanner_output"]["gitnexus_symbols"] = 1240
     report["scanner_output"]["gitnexus_flows"] = 84
-    report["scanner_output"]["secret_files_detected"] = [".env", "config/credentials.yaml"]
-    report["scanner_output"]["languages"] = {"Python": 120, "JavaScript": 25, "HTML": 11}
+    report["scanner_output"]["secret_files_detected"] = [
+        ".env",
+        "config/credentials.yaml",
+    ]
+    report["scanner_output"]["languages"] = {
+        "Python": 120,
+        "JavaScript": 25,
+        "HTML": 11,
+    }
     report["scanner_output"]["build_systems"] = ["Python (setuptools/poetry/hatch)"]
     report["scanner_output"]["entrypoints"] = ["main.py", "app.py"]
     report["scanner_output"]["dependency_files"] = ["pyproject.toml"]
@@ -214,6 +245,8 @@ class TestRenderReport:
             f.write(render_report(report, "test.json"))
             path = f.name
         try:
-            assert os.path.getsize(path) > 5000, f"HTML file too small: {os.path.getsize(path)} bytes"
+            assert os.path.getsize(path) > 5000, (
+                f"HTML file too small: {os.path.getsize(path)} bytes"
+            )
         finally:
             os.unlink(path)
