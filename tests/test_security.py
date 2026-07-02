@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from repo_oracle.scanner import scan_repo, _is_secret, SECRET_PATTERNS
+from repo_oracle.scanner import scan_repo, _is_secret
 
 
 class TestSecretDetection:

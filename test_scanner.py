@@ -4,7 +4,8 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from repo_oracle.scanner import (
+import pytest
+from scanner import (
     scan_repo,
     _slugify,
     _is_excluded_dir,
@@ -13,6 +14,7 @@ from repo_oracle.scanner import (
     _detect_build_systems,
     _detect_monorepo,
     _detect_entrypoints,
+    EXCLUDED_DIRS,
 )
 
 

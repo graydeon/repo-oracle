@@ -10,10 +10,8 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 import tempfile
 import time
-from pathlib import Path
 from typing import Optional
 
 import typer
@@ -21,9 +19,8 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
-from rich.text import Text
 
-from repo_oracle import scan_repo, render_report, write_reports, __version__
+from repo_oracle import scan_repo, render_report, __version__
 from repo_oracle.schema import (
     empty_report, new_finding, new_recommendation, new_evidence,
     validate_report_strict, ALL_DIMENSIONS,
@@ -97,8 +94,6 @@ def _build_oss_report(scan: dict) -> dict:
     # Assess OSS signals from scanner output
     top_langs = list(scan["languages"].keys())[:3]
     has_contrib = any("CONTRIBUTING" in f.upper() for f in scan["documentation_files"])
-    has_coc = any("CODE_OF_CONDUCT" in f.upper() for f in scan["documentation_files"])
-    has_changelog = any("CHANGELOG" in f.upper() for f in scan["documentation_files"])
     has_license = any("LICENSE" in f.upper() for f in scan["documentation_files"])
     has_ci = len(scan["ci_cd_files"]) > 0
     has_tests = len(scan["test_frameworks"]) > 0
@@ -231,9 +226,12 @@ def _oss_next_action(has_contrib: bool, has_ci: bool, has_tests: bool, has_licen
     if has_contrib and has_ci and has_tests:
         return "Ready for contribution. Clone, find a good first issue, and submit a PR."
     missing = []
-    if not has_contrib: missing.append("CONTRIBUTING.md")
-    if not has_tests: missing.append("tests")
-    if not has_ci: missing.append("CI/CD")
+    if not has_contrib:
+        missing.append("CONTRIBUTING.md")
+    if not has_tests:
+        missing.append("tests")
+    if not has_ci:
+        missing.append("CI/CD")
     return f"Needs OSS infra: {', '.join(missing)}. Help add these before contributing."
 
 

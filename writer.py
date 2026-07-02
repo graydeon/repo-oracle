@@ -12,12 +12,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
 import sys
 from datetime import date, datetime
 from pathlib import Path
+from typing import Optional
 
 # ── Default paths ───────────────────────────────────────────────────────────
 
@@ -61,6 +63,10 @@ def _generate_repo_index(repodir: Path, repo_slug: str) -> str:
     if repodir.is_dir():
         files = sorted(repodir.glob("repo-oracle-*.html"), reverse=True)
         for f in files:
+            # Parse date from filename
+            name = f.stem  # repo-oracle-<slug>-YYYY-MM-DD[-suffix]
+            parts = name.split("-")
+            date_part = "-".join(parts[-3:]) if len(parts) >= 6 else name
             # Read first few lines for executive summary
             summary = ""
             try:
@@ -345,9 +351,9 @@ def main() -> None:
     print(f"  Index: {result['repo_index']}")
     print(f"  Global Index: {result['global_index']}")
     if result["git_committed"]:
-        print("  Git: committed")
+        print(f"  Git: committed")
     if result["git_pushed"]:
-        print("  Git: pushed to origin")
+        print(f"  Git: pushed to origin")
     print(f"\nHosted URL: http://192.168.50.43:8088/local-project-context/{REPORTS_ROOT}/{args.slug}/")
     print(f"           or https://context.home.arpa/local-project-context/{REPORTS_ROOT}/{args.slug}/")
 

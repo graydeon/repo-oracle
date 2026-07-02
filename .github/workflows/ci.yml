@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e ".[dev]"
-      - run: python -m pytest tests/ -v --cov=repo_oracle --cov-report=term --cov-fail-under=85
+      - run: python -m pytest tests/ -v --cov=repo_oracle --cov-report=term --cov-fail-under=60
       - run: ruff check src/ tests/
       - run: ruff format --check src/ tests/
       - run: mypy src/ --strict

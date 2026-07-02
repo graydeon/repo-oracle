@@ -2,8 +2,14 @@
 
 import json
 import pytest
-from repo_oracle.schema import (
+from schema import (
     Report,
+    Finding,
+    Recommendation,
+    EvidenceSource,
+    Contradiction,
+    ReportMetadata,
+    ScannerOutput,
     validate_report,
     validate_report_strict,
     ValidationError,
@@ -12,11 +18,13 @@ from repo_oracle.schema import (
     new_finding,
     new_evidence,
     new_recommendation,
+    new_metadata,
     ALL_DIMENSIONS,
     DIMENSION_NAMES,
     META_DIMENSIONS,
     VALID_CONFIDENCES,
     VALID_CATEGORIES,
+    VALID_TIERS,
 )
 
 

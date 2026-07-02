@@ -5,12 +5,14 @@ import os
 import tempfile
 from pathlib import Path
 
-from repo_oracle.writer import (
+import pytest
+from writer import (
     write_reports,
     _report_filename,
     _next_collision_suffix,
     _generate_repo_index,
     _generate_global_index,
+    REPORTS_ROOT,
 )
 
 

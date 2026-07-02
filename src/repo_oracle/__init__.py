@@ -17,7 +17,7 @@ from repo_oracle.writer import write_reports
 
 __version__ = "0.1.0"
 __all__ = [
-    "scan_repo", "render_report", "write_reports",
+    "scan_repo", "render_report", "render_markdown", "write_reports",
     "validate_report", "validate_report_strict", "generate_json_schema",
     "empty_report", "new_finding", "new_recommendation", "new_evidence", "new_metadata",
     "Report", "Finding", "Recommendation", "EvidenceSource", "Contradiction",

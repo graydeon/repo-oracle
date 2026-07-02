@@ -1,16 +1,22 @@
 """Tests for repo-oracle renderer module."""
 
+import json
 import os
 import tempfile
+from pathlib import Path
 
-from repo_oracle.render import (
+import pytest
+from render import (
     render_report,
     _confidence_badge,
     _confidence_color,
     _priority_badge,
     _activity_badge,
+    CONFIDENCE_BADGES,
+    PRIORITY_COLORS,
+    ACTIVITY_COLORS,
 )
-from repo_oracle.schema import empty_report, new_finding, new_recommendation, new_evidence, ALL_DIMENSIONS
+from schema import empty_report, new_finding, new_recommendation, new_evidence, ALL_DIMENSIONS
 
 
 def _make_test_report() -> dict:
@@ -176,6 +182,7 @@ class TestRenderReport:
             "Recommendations",
             "Next Actions",
             "Evidence Registry",
+            "Appendix",
         ]
         for section in sections:
             assert section in html, f"Missing section: {section}"

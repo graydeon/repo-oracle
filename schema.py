@@ -549,6 +549,7 @@ def empty_report(
     repo_slug: str = "",
 ) -> Report:
     """Create an empty but valid Report skeleton for a repo."""
+    from datetime import datetime, timezone
     if not repo_slug:
         import re
         repo_slug = re.sub(r"[^a-z0-9]+", "-", (repo_name or "unknown").lower()).strip("-")
