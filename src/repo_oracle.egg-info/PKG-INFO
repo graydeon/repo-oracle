@@ -1,0 +1,92 @@
+Metadata-Version: 2.4
+Name: repo-oracle
+Version: 0.1.0
+Summary: Investigate any Git repository with one command — evidence-backed reports in JSON, HTML, and Markdown
+Author-email: Gray d'Eon <gray@repo-oracle.dev>
+License: MIT
+Project-URL: Homepage, https://github.com/graydeon/repo-oracle
+Project-URL: Repository, https://github.com/graydeon/repo-oracle
+Project-URL: Issues, https://github.com/graydeon/repo-oracle/issues
+Keywords: cli,repository,analysis,audit,investigation,code-review,developer-tools
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Quality Assurance
+Classifier: Topic :: Utilities
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: Jinja2>=3.1
+Requires-Dist: typer>=0.12
+Requires-Dist: rich>=13.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Requires-Dist: ruff>=0.4; extra == "dev"
+Requires-Dist: mypy>=1.0; extra == "dev"
+
+# Repo Oracle
+
+**Tell me what this repo is, what condition it's in, and what I should do next — with evidence.**
+
+A Hermes-native repository investigation tool-suite. Given a local repo path, it runs a deterministic scanner, launches agentic deep-investigation subagents, and produces a standardized evidence-backed report (JSON + HTML) saved to the homelab context ecosystem.
+
+## Architecture
+
+| Component | Type | Description |
+|-----------|------|-------------|
+| `scanner.py` | Python script | Deterministic pre-analysis: languages, files, git status, build system → JSON |
+| `render.py` | Python script | JSON report → standalone HTML via Jinja2 |
+| `writer.py` | Python script | Saves JSON + HTML to context repo, commits, pushes |
+| `schema.py` | Python module | TypedDict report schema + validation |
+| `repo-oracle` skill | Hermes SKILL.md | Agentic workflow: orchestrates scanner → subagents → synthesis → report |
+
+## Quick Start
+
+```bash
+# Install
+cd ~/dev/repo-oracle
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+
+# Run scanner (deterministic only)
+python3 scanner.py --repo /path/to/repo
+
+# Full agentic analysis (requires Hermes)
+# Load skill: /skill repo-oracle
+# Then: "investigate /path/to/repo"
+```
+
+## Report Output
+
+Reports are saved to `local-project-context/research/repo-oracle/reports/<repo_slug>/`:
+- `repo-oracle-<slug>-YYYY-MM-DD.json` — Machine-readable canonical data
+- `repo-oracle-<slug>-YYYY-MM-DD.html` — Human-readable audit report
+
+Browsable via the CT 220 hosted viewer at `http://192.168.50.43:8088/local-project-context/`.
+
+## Analysis Dimensions (14)
+
+Purpose, Languages/Frameworks, Build/Test System, Entrypoints, Architecture, Dependency Graph, Runtime Assumptions, Stale Dependencies, Git History, Open TODO/FIXME, Documentation Quality, Test Coverage/Health, Security Surface, Deployment Clues.
+
+Plus 3 meta-dimensions: Activity Signal, Value Assessment, Next Action Recommendation.
+
+## Safety
+
+- **READ-ONLY** on target repos — never modifies, never executes without approval
+- **Secret files** detected by name, contents never read
+- **Writes only** to report output directory in local-project-context
+- **Build/test execution** requires explicit user approval per invocation
+
+## Report Schema
+
+See `schema.py` for the canonical TypedDict definitions. Every finding is evidence-linked. Confidence is explicit (HIGH/MEDIUM/LOW/UNKNOWN/N/A). Recommendations cite specific evidence sources.
+
+## License
+
+MIT
