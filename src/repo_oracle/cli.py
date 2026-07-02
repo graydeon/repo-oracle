@@ -673,14 +673,25 @@ def investigate(
 @app.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
+    path: str = typer.Argument(".", help="Path to repository (local dir or Git URL)"),
+    output_dir: str = typer.Option("./repo-oracle-reports", "--output-dir", "-o"),
+    json_output: bool = typer.Option(False, "--json"),
+    html: bool = typer.Option(True, "--html/--no-html"),
+    markdown: bool = typer.Option(False, "--markdown", "-m"),
+    open_browser: bool = typer.Option(False, "--open"),
+    quiet: bool = typer.Option(False, "--quiet", "-q"),
+    oss: bool = typer.Option(False, "--oss"),
 ) -> None:
     """repo-oracle — Investigate any Git repository with one command.
 
     Run without arguments to investigate the current directory.
     """
     if ctx.invoked_subcommand is None:
-        # Default: investigate current directory
-        investigate(".", quiet=False)
+        investigate(
+            path=path, output_dir=output_dir, json_output=json_output,
+            html=html, markdown=markdown, open_browser=open_browser,
+            quiet=quiet, oss=oss,
+        )
 
 
 if __name__ == "__main__":
