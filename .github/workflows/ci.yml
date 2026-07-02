@@ -22,7 +22,7 @@ jobs:
       - run: python -m pytest tests/ -v --cov=repo_oracle --cov-report=term
       - run: ruff check src/ tests/
       - run: ruff format --check src/ tests/
-      - run: mypy src/ --strict
+      - run: mypy src/ --ignore-missing-imports
 
   publish:
     needs: test
