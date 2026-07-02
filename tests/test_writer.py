@@ -103,10 +103,10 @@ class TestWriteReports:
             assert os.path.exists(result["global_index"])
 
             # Verify index content
-            index_html = Path(result["global_index"]).read_text()
+            index_html = Path(result["global_index"]).read_text(encoding="utf-8")
             assert "test-project" in index_html
 
-            repo_index = Path(result["repo_index"]).read_text()
+            repo_index = Path(result["repo_index"]).read_text(encoding="utf-8")
             assert "test-project" in repo_index
 
     def test_files_have_correct_names(self):

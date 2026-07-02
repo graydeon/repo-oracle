@@ -81,7 +81,7 @@ class TestReadOnlyGuarantee:
             # File should be unchanged
             mtime_after = os.path.getmtime(os.path.join(tmpdir, "test.py"))
             assert mtime_before == mtime_after
-            content = Path(tmpdir, "test.py").read_text()
+            content = Path(tmpdir, "test.py").read_text(encoding="utf-8")
             assert content == "x = 1"
 
     def test_no_new_files_created(self):

@@ -146,7 +146,7 @@ def _generate_global_index(reports_root: Path) -> str:
                 try:
                     import re
 
-                    content = html_files[0].read_text()
+                    content = html_files[0].read_text(encoding="utf-8")
                     match = re.search(
                         r'<div class="summary-box">\s*<p>(.*?)</p>', content, re.DOTALL
                     )

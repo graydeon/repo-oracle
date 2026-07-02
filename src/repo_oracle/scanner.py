@@ -738,7 +738,7 @@ def _collect_gitnexus_data(repo_path: str) -> dict:
     meta_path = gitnexus_dir / "meta.json"
     if meta_path.is_file():
         try:
-            meta = json.loads(meta_path.read_text())
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
             stats = meta.get("stats", {})
             result["has_gitnexus"] = True
             result["symbol_count"] = stats.get("symbols", 0)
