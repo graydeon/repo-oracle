@@ -35,3 +35,4 @@ htmlcov/
 
 # Ruff
 .ruff_cache/
+src/repo_oracle.egg-info/
